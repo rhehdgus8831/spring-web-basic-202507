@@ -36,7 +36,13 @@
     </div>
 
     <div class="list-container">
-      <h2>📑 등록된 도서 목록</h2>
+      <div class="list-header">
+        <h2>📑 등록된 도서 목록</h2>
+        <div class="sort-buttons">
+          <button class="sort-btn" data-sort="title">제목순</button>
+          <button class="sort-btn" data-sort="price">가격순</button>
+        </div>
+      </div>
       <ul class="book-list">
         <%-- 자바스크립트를 통해 동적으로 책 목록이 채워질 공간입니다. --%>
       </ul>
