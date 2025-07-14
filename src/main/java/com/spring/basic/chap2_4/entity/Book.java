@@ -17,4 +17,11 @@ public class Book {
     private String author;
     private int Price;
 
+
+    // 수정 편의 메서드
+    public void updateBookInfo(String title, String author, int price) {
+        this.title = title;
+        this.author = author;
+        this.Price = price;
+    }
 }
