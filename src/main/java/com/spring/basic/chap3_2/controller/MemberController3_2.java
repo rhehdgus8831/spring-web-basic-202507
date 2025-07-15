@@ -3,56 +3,54 @@ package com.spring.basic.chap3_2.controller;
 import com.spring.basic.chap3_2.entity.Member;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/v3-2/members")
 public class MemberController3_2 {
 
-    private Map<String , Member> memberStore =new HashMap<>();
-    
+    private Map<String, Member> memberStore = new HashMap<>();
+
     public MemberController3_2() {
 
-        // 빌터패턴은 순서 x , 파라미터를 다 안 써도 됨
         Member member1 = Member.builder()
-                .account("abc1234")
+                .account("abc123")
                 .password("9999")
                 .nickname("뽀롱이")
                 .build();
 
         Member member2 = Member.builder()
-                .account("def9874")
+                .account("def9876")
                 .password("4444")
                 .nickname("핑순이")
                 .build();
 
         memberStore.put(member1.getUid(), member1);
         memberStore.put(member2.getUid(), member2);
+
     }
 
     // 전체 조회
     @GetMapping
-    public List<Member> list(){
+    public List<Member> list() {
         return new ArrayList<>(memberStore.values());
     }
 
     // 회원 등록
-    // ?account = xxx&password=xxx&nickname=xxx -> 불편
-    // 전송할 데이터를 JSON객체로 묶어서 보내줘 내가 풀어서 쓸께
+    // ?account=xxx&password=xxx&nickname=xxx   -> 불편
+    // 전송할 데이터를 JSON객체로 묶어서 보내줘 내가 풀어서 쓸게
     /*
-      {
-           "account":"abc1234",
-           "password":"<PASSWORD>",
-           "nickname":""
-       }
-    */
+        {
+            "account": "xxx",
+            "password": "xxx",
+            "nickname": "xxx",
+        }
+     */
     @PostMapping
-    public String join(@RequestBody Member member){
-        member.setUid(java.util.UUID.randomUUID().toString());
+    public String join(@RequestBody Member member) {
+        member.setUid(UUID.randomUUID().toString());
         memberStore.put(member.getUid(), member);
-        return "새로운 멤버가 생성됨 ! - nickname" + member.getNickname();
+        return "새로운 멤버가 생성됨! - nickname : " + member.getNickname();
     }
+
 }

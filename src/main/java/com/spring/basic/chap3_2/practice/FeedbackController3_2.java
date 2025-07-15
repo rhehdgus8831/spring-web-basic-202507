@@ -9,15 +9,15 @@ import java.util.List;
 @RequestMapping("/api/v3-2/feedback")
 public class FeedbackController3_2 {
 
-    private List<com.spring.basic.chap3_2.practice.Feedback> feedbackList = new ArrayList<>();
+    private List<Feedback> feedbackList = new ArrayList<>();
 
     @GetMapping
-    public List<com.spring.basic.chap3_2.practice.Feedback> feedbackList() {
+    public List<Feedback> feedbackList() {
         return feedbackList;
     }
 
     @PostMapping
-    public String  createFeedback(@RequestBody com.spring.basic.chap3_2.practice.Feedback feedback) {
+    public String  createFeedback(@RequestBody Feedback feedback) {
         feedback.setId((long) (Math.random() * 1000000 + 1));
         feedbackList.add(feedback);
         return "Feedback created: " + feedback;
