@@ -2,8 +2,10 @@ package com.spring.basic.chap5_3.controller;
 
 import com.spring.basic.chap3_2.entity.Member;
 import com.spring.basic.chap5_3.dto.request.MemberCreateDto;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -41,7 +43,7 @@ public class MemberController5_3 {
         1. 로그 내용
         2. 로그 레벨 - 중요도
           - TRACE : 단순히 객체가생성되거나, 함수가 호출거나 하는 로그를 찍을 때
-          - DEBUG : 개발하면서 변수값을 추적하거나 디버깅 용도 (개발할떄 DEBUG, 배포할때는 INFO로 변경 !)
+          - DEBUG : 개발하면서 변수값을 추적하거나 디버깅 용도
           - INFO : 운영서버의 일반적인 내용을 작성 (서버가 실행, 특정 핵심 요청이 들어오거나)
           - WARN : 뭔가 이상이 생긴 경우, 다만 프로그램에 큰 위해는 아닌 경우
           - ERROR : 커다란 예외가 발생하거나 프로그램에 치명적인 오류가 난 경우
@@ -54,29 +56,29 @@ public class MemberController5_3 {
     // 전체 조회
     @GetMapping
     public ResponseEntity<?> memberList() {
+
         log.trace("memberList 메서드 호출됨");
 
-        log.info("/api/v5-3/members : GET - 요청 시작 !");
+        log.info("/api/v5-3/members : GET - 요청 시작!");
 
         List<Member> members = new ArrayList<>(memberStore.values());
 
-        log.debug("members.size ={}",members.size());
+        log.debug("members.size = {}", members.size());
 
-        if (members.size() <= 0){
+        if (members.size() <= 0) {
             log.warn("회원 데이터가 없습니다.");
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.notFound().build();
         }
-        log.debug("members[0].nickname={}",members.get(0).getNickname());
+
+
         try {
-
-        }catch (Exception e){
+            log.debug("members[0].nickname = {}", members.get(0).getNickname());
+        } catch (Exception e) {
             log.error("서버 에러입니다.");
-            return ResponseEntity.internalServerError().body("서버 에러 입니다.");
+            return ResponseEntity.internalServerError().body("서버 에러입니다.");
         }
-
 
         log.trace("memberList 메서드 호출 종료됨");
-
         return ResponseEntity
                 .ok()
                 .body(members);
@@ -84,16 +86,37 @@ public class MemberController5_3 {
 
     // 회원 생성
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody MemberCreateDto dto){
+    public ResponseEntity<?> create(
+            @RequestBody @Valid MemberCreateDto dto // @Valid 입력값 검증
+            // 입력값 검증 오류 내용을 갖고 있는 객체
+            , BindingResult bindingResult
+            ) {
+                if(bindingResult.hasErrors()) { // 검증결과에 에러가 있다면
+                    Map<String, String> errorMap = new HashMap<>();
+                    bindingResult.getFieldErrors().forEach(err -> {
+                        errorMap.put(err.getField(), err.getDefaultMessage());
+                            });
+                    log.warn("입력값 오류 발생");
+                    return ResponseEntity.badRequest().body(errorMap);
+                }
 
-        log.info("param - {}",dto);
+        log.info("param - {}", dto);
 
-        return null;
+        // 데이터 베이스 저장 : UID를 포함, 비밀번호를 인코딩
+        // dto -> entity로 변환하는 과정
+//        Member member = Member.builder()
+//                .account(dto.getUserAcc())
+//                .password(dto.getPw())
+//                .nickname(dto.getNick())
+//                .build();
 
-//        memberStore.put(member.getAccount(), member);
-//
-//        return ResponseEntity.ok("created member:" + member);
+       // Member member = new Member(dto);
+
+        Member member = MemberCreateDto.from(dto);
+
+        memberStore.put(dto.getUserAcc(), member);
+
+        return ResponseEntity.ok("created member: " + member);
     }
-
 
 }
