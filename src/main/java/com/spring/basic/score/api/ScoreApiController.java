@@ -1,13 +1,14 @@
 package com.spring.basic.score.api;
 
+import com.spring.basic.score.dto.request.ScoreCreateRequest;
+import com.spring.basic.score.dto.response.ScoreDetailResponse;
 import com.spring.basic.score.dto.response.ScoreListResponse;
 import com.spring.basic.score.entity.Score;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,6 +34,69 @@ public class ScoreApiController {
         scoreStore.put(s3.getId(), s3);
         scoreStore.put(s4.getId(), s4);
     }
+
+
+    // 성적 등록
+    @PostMapping
+    public ResponseEntity<?> create(
+            @RequestBody @Valid ScoreCreateRequest dto,
+            // 입력값 검증 에러정보를 가진 객체
+            BindingResult bindingResult
+    ) {
+
+        log.info("/api/v1/scores POST!");
+        log.debug("param: score - {}", dto);
+
+        if (bindingResult.hasErrors()) { // 입력값 검증에서 에러가 발생했다면
+            Map<String, String> errorMap = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(err -> {
+                errorMap.put(err.getField(), err.getDefaultMessage());
+            });
+            return ResponseEntity
+                    .badRequest()
+                    .body(errorMap)
+                    ;
+        }
+
+        // 실제로 데이터베이스에 저장
+        Score score = ScoreCreateRequest.toEntity(dto);
+        score.setId(nextId++);
+
+        scoreStore.put(score.getId(), score);
+
+        return ResponseEntity.ok().body("성적 정보 생성 완료 - " + dto);
+    }
+
+    // 성적 정보 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> removeScore(@PathVariable Long id) {
+
+        Score removed = scoreStore.remove(id);
+
+        if (removed == null) {
+            return ResponseEntity.badRequest().body("삭제에 실패했습니다.");
+        }
+
+        return ResponseEntity.ok("성적 정보 삭제 성공 - " + id);
+    }
+
+    // 성적 정보 개별 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<?> scoreDetail(@PathVariable Long id) {
+        Score score = scoreStore.get(id);
+
+        if (score == null) {
+            return ResponseEntity.badRequest().body("해당 학번은 존재하지 않습니다.");
+        }
+
+        // 석차 구하기
+        calculateListRank(new ArrayList<>(scoreStore.values()));
+
+        ScoreDetailResponse responseDto = ScoreDetailResponse.of(score, scoreStore.size());
+
+        return ResponseEntity.ok(responseDto);
+    }
+
 
     // 성적 정보 전체 조회
     @GetMapping
