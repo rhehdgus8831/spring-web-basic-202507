@@ -2,26 +2,31 @@ package com.spring.basic.score.entity;
 
 import lombok.*;
 
-@Setter @Getter @ToString @EqualsAndHashCode
-@NoArgsConstructor @AllArgsConstructor @Builder
+// 학생 한명의 성적정보를 저장
+@Setter @Getter @ToString
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 public class Score {
-    private Long id;
-    private String name;
-    private int kor, eng, math;
-    private int total;
-    private double average;
-    private int rank;  // 추가
+    private Long id; // 학번
+    private String name; // 이름;
+    private int kor, eng, math; // 국영수 점수
+    private int total; // 총점
+    private double average; // 평균
+    private int rank;
 
-    // 빌더 커스터마이징
-    public static class ScoreBuilder {
-        public Score build() {
-            if (total == 0) {
-                total = kor + eng + math;
-            }
-            if (average == 0.0) {
-                average = Math.round((total / 3.0) * 100) / 100.0;
-            }
-            return new Score(id, name, kor, eng, math, total, average, 0);
-        }
+    public Score(Long id, String name, int kor, int eng, int math) {
+        this.id = id;
+        this.name = name;
+        this.kor = kor;
+        this.eng = eng;
+        this.math = math;
+        calcTotalAndAverage();
+    }
+
+    // 총점 평균을 구하는 메서드
+    private void calcTotalAndAverage() {
+        this.total = this.kor + this.eng + this.math;
+        this.average = this.total / 3.0;
     }
 }

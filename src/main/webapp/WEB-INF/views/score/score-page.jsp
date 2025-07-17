@@ -158,7 +158,7 @@
         $scores.innerHTML += `
                     <li data-score-id="\${id}">
                         # 이름: <a href="/score/\${id}">\${maskingName}</a>, 총점: \${sum}점,
-                        평균: \${avg}점, 석차: \${rank}
+                        평균: \${avg.toFixed(2)}점, 석차: \${rank}
                         <a href='#' class='del-btn'>삭제</a>
                     </li>
                 `;
