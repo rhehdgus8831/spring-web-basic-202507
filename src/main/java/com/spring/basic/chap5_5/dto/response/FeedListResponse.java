@@ -1,4 +1,4 @@
-package com.spring.basic.chap5_5.dto.ressponse;
+package com.spring.basic.chap5_5.dto.response;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;

@@ -2,14 +2,13 @@ package com.spring.basic.chap5_5.servive;
 
 
 import com.spring.basic.chap5_5.dto.request.FeedCreateRequest;
-import com.spring.basic.chap5_5.dto.ressponse.FeedDetailResponse;
-import com.spring.basic.chap5_5.dto.ressponse.FeedListResponse;
+import com.spring.basic.chap5_5.dto.response.FeedDetailResponse;
+import com.spring.basic.chap5_5.dto.response.FeedListResponse;
 import com.spring.basic.chap5_5.entity.Feed;
 import com.spring.basic.chap5_5.repository.FeedRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,7 +49,15 @@ public class FeedService {
     // 개별처리 요청에 대한 중간처리
 
     public FeedDetailResponse findOneProcess(Long id) {
-        return null;
+        List<Feed> feeds = feedRepository.getFeeds();
+
+        // ID로 특정 피드 찾기
+        Feed targetFeed = feeds.stream()
+                .filter(feed -> feed.getFeedId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 피드 ID: " + id));
+
+        return FeedDetailResponse.from(targetFeed);
     }
 
 

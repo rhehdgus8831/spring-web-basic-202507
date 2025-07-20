@@ -1,15 +1,11 @@
 package com.spring.basic.chap5_5.controller;
 
 import com.spring.basic.chap5_5.dto.request.FeedCreateRequest;
-import com.spring.basic.chap5_5.dto.ressponse.FeedDetailResponse;
-import com.spring.basic.chap5_5.dto.ressponse.FeedListResponse;
-import com.spring.basic.chap5_5.entity.Feed;
-import com.spring.basic.chap5_5.repository.FeedRepository;
+import com.spring.basic.chap5_5.dto.response.FeedDetailResponse;
+import com.spring.basic.chap5_5.dto.response.FeedListResponse;
 import com.spring.basic.chap5_5.servive.FeedService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -73,12 +69,14 @@ public class FeedController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> findOne(@PathVariable Long id){
-
         // 피드 id, 생성시간 제외
         // 작성자명 (writer), 피드내용은 (feed_content), 조회수는 (veiw) 응답
-        FeedDetailResponse response= feedService.findOneProcess(id);
-
-        return ResponseEntity.ok(response);
+        try {
+            FeedDetailResponse response = feedService.findOneProcess(id);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 
