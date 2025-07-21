@@ -52,6 +52,8 @@ public class MemberApiControllerV6 {
     @PostMapping
     public ResponseEntity<?> create(@RequestBody @Valid MemberCreateDto dto){
 
+
+
         // 서비스에게 위임
         MemberListResponse response = memberService.createMember(dto);
 
