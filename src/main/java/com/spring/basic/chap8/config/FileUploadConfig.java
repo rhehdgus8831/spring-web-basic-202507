@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
 
-// 파일 업로드 관련 설정 클래스
+// 파일 업로드 관련 설정 클래스  (필수 설정)
 @Configuration
 @Getter
 public class FileUploadConfig {
